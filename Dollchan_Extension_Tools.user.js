@@ -1735,7 +1735,7 @@ function ajaxCheckSubmit(form, fd, fn) {
 		url: form.action,
 		onreadystatechange: function(xhr) {
 			if(xhr.readyState !== 4) return;
-			if(xhr.status === 200) { fn(HTMLtoDOM(xhr.responseText), xhr.finalUrl); }
+			if(xhr.status === 200) { fn(HTMLtoDOM(xhr.responseText), xhr.finalUrl || form.action); }
 			else if(xhr.status === 0) fn(Lng.noConnect);
 			else {
 				$close($id('DESU_alertWait'));
@@ -1849,7 +1849,7 @@ function showQuickReply(post) {
 			)]);
 		}
 	} else if($next(post) === qArea) { $disp(qArea); showMainReply(); return; }
-	$after(post, [qArea]);
+	$after($x('ancestor::table', post) || post, [qArea]);
 	if(!TNum && Cfg.tform !== 0) pArea.style.display = 'none';
 	qArea.style.display = 'block';
 	pr.form.style.width = '100%';
@@ -3871,7 +3871,7 @@ function parseDelform(node, dc, tFn, pFn) {
 			op = $new('div', {}, {}, dc);
 			opEnd = $x(table + '|div[descendant::table]|div[starts-with(@id,"repl")]', thr, dc);
 			$each(opEnd ? $X('preceding-sibling::node()', opEnd, dc) : $X('node()', thr, dc),
-				function(el) { op.appendChild(el); }, true);
+				function(el) { op.appendChild(el); }, !opEnd || nav.Firefox);
 			if(aib._7ch) {
 				(i = $new('div', {}, {}, dc)).appendChild(op);
 				op.className = 'post'; op = i;
