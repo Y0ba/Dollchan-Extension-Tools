@@ -1736,10 +1736,10 @@ function ajaxCheckSubmit(form, fd, fn) {
 		onreadystatechange: function(xhr) {
 			if(xhr.readyState !== 4) return;
 			if(xhr.status === 200) { fn(HTMLtoDOM(xhr.responseText), xhr.finalUrl || form.action); }
-			else if(xhr.status === 0) fn(Lng.noConnect);
+			else if(xhr.status === 0) $alert(Lng.noConnect);
 			else {
 				$close($id('DESU_alertWait'));
-				alert('HTTP [' + xhr.status + '] ' + xhr.statusText);
+				$alert('HTTP [' + xhr.status + '] ' + xhr.statusText);
 			}
 		}
 	});
