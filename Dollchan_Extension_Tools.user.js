@@ -1736,10 +1736,12 @@ function ajaxCheckSubmit(form, fd, fn) {
 		onreadystatechange: function(xhr) {
 			if(xhr.readyState !== 4) return;
 			if(xhr.status === 200) { fn(HTMLtoDOM(xhr.responseText), xhr.finalUrl || form.action); }
-			else if(xhr.status === 0) $alert(Lng.noConnect);
-			else {
+			else if(xhr.status !== 0) {
 				$close($id('DESU_alertWait'));
 				$alert('HTTP [' + xhr.status + '] ' + xhr.statusText);
+			} else if(!nav.Chrome) {
+				$close($id('DESU_alertWait'));
+				$alert(Lng.noConnect);
 			}
 		}
 	});
@@ -2868,8 +2870,8 @@ function ajaxGetPosts(url, b, tNum, fn) {
 	GM_xmlhttpRequest({method: 'GET', url: url, onreadystatechange: function(xhr) {
 		if(xhr.readyState !== 4) return;
 		if(xhr.status === 200) { parseHTMLdata(xhr.responseText, b); fn(); }
-		else if(xhr.status === 0) fn(Lng.noConnect);
-		else fn('HTTP [' + xhr.status + '] ' + xhr.statusText);
+		else if(xhr.status !== 0) fn('HTTP [' + xhr.status + '] ' + xhr.statusText);
+		else if(!nav.Chrome) fn(Lng.noConnect);
 	}});
 }
 
