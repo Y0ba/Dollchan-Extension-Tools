@@ -550,7 +550,7 @@ function readCfg() {
 	if(aib.hana) Cfg.updthr = Cfg.expost = 0;
 	if(!nav.Firefox || aib.hana) Cfg.updfav = 0;
 	if(nav.Opera) Cfg.ytitle = 0;
-	if(nav.Firefox < 7 && !nav.Chrome) Cfg.rndimg = 0;
+	if(nav.Firefox < 7) Cfg.rndimg = 0;
 	if(Cfg.svsage === 0) Cfg.issage = 0;
 	setStored('DESU_Config_' + aib.dm, $uneval(Cfg));
 	for(key in LngArray) Lng[key] = Cfg.lang === 0 ? LngArray[key][0] : LngArray[key][1];
@@ -930,7 +930,7 @@ function addSettings() {
 		})),
 		divBox('verify', Lng.replyCheck),
 		divBox('addfav', Lng.addToFav),
-		$if(nav.Firefox > 6 || nav.Chrome, divBox('rndimg', Lng.rndImages)),
+		$if(nav.Firefox > 6, divBox('rndimg', Lng.rndImages)),
 		$if(pr.mail, $New('div', [lBox('sagebt', Lng.mailToSage), lBox('svsage', Lng.saveSage)])),
 		$New('div', [optSel('forcap', Lng.selCapInput, Lng.capInput)]),
 		$if(pr.on, $New('div', [
@@ -1698,7 +1698,7 @@ function doPostformChanges() {
 		setTimeout(doSageBtn, 0);
 	}
 	if(Cfg.verify !== 0) {
-		if(nav.Firefox > 3 || nav.Chrome) {
+		if(nav.Firefox > 3) {
 			pr.form.onsubmit = function(e) {
 				$pD(e);
 				setTimeout(function() {
@@ -1739,7 +1739,7 @@ function ajaxCheckSubmit(form, fd, fn) {
 			else if(xhr.status !== 0) {
 				$close($id('DESU_alertWait'));
 				$alert('HTTP [' + xhr.status + '] ' + xhr.statusText);
-			} else if(!nav.Chrome) {
+			} else {
 				$close($id('DESU_alertWait'));
 				$alert(Lng.noConnect);
 			}
