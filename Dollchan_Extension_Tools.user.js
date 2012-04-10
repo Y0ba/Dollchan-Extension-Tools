@@ -234,6 +234,7 @@ LngArray = {
 	],
 	loading:		['Загрузка...', 'Loading...'],
 	checking:		['Проверка...', 'Checking...'],
+	deleting:		['Удаление...', 'Deleting...'],
 	error:			['Ошибка:', 'Error:'],
 	bold:			['Жирный', 'Bold'],
 	italic:			['Наклонный', 'Italic'],
@@ -259,6 +260,7 @@ LngArray = {
 	cTimeOffset:	[' Разница во времени', ' Time difference'],
 	cTimePattern:	['Шаблон замены', 'Replace pattern'],
 	succDeleted:	['Пост(ы) удален(ы)!', 'Post(s) deleted!'],
+	errDelete:		['Не могу удалить пост(ы)!', 'Can\'t delete post(s)!'],
 	rndImages:		['Добавлять случайный байт в изображение', 'Add random byte into image'],
 	keyNavig:		['Навигация с помощью клавиатуры* ', 'Navigation with keyboard* '],
 	keyNavHelp:		[
@@ -1705,10 +1707,8 @@ function doPostformChanges() {
 			};
 			dForm.onsubmit = function(e) {
 				$pD(e);
-				$alert(Lng.loading, 'Wait');
-				ajaxCheckSubmit(dForm, new FormData(dForm),
-					function() { $close($id('DESU_alertWait')); $alert(Lng.succDeleted); }
-				);
+				$alert(Lng.deleting, 'Wait');
+				ajaxCheckSubmit(dForm, new FormData(dForm), checkDelete);
 			};
 		} else {
 			if(aib.nul) pr.form.action = pr.form.action.replace(/https/, 'http');
@@ -1787,6 +1787,20 @@ function checkUpload(dc, url) {
 		$close($id('DESU_alertWait'));
 		$alert(err);
 	}
+}
+
+function checkDelete(dc, url) {
+	var allDel = true, cbFunc = function() {
+		$each($X('.//input[@type="checkbox"]', dForm), function(el) {
+			if(el.checked && !getPost(el).isDel) allDel = false;
+			el.checked = false;
+		});
+		$alert(allDel ? Lng.succDeleted : Lng.errDelete);
+	};
+	if(pr.tNum) {
+		if(!TNum) loadThread(pByNum[pr.tNum], 5, cbFunc);
+		else loadNewPosts(true, cbFunc);
+	} else $close($id('DESU_alertWait'));
 }
 
 function prepareData(fn) {
@@ -2185,6 +2199,7 @@ function scriptCSS() {
 		.file_reply + .DESU_ytObj { float: left; margin: 5px 20px 5px 5px; }\
 		.DESU_ytObj + div:not(.file_reply) { clear: both; }'
 	);
+	if(aib._420) x.push('.opqrbtn, .qrbtn, .ignorebtn { display: none; }');
 
 	if(!$id('DESU_css')) {
 		$t('head').appendChild($new('style', {id: 'DESU_css', type: 'text/css', text: x.join(' ')}));
@@ -2938,7 +2953,7 @@ function expandThread(thr, b, tNum, last, isDel) {
 	$close($id('DESU_alertWait'));
 }
 
-function loadThread(post, last) {
+function loadThread(post, last, fn) {
 	$alert(Lng.loading, 'Wait');
 	ajaxGetPosts(null, brd, post.Num, function(err) {
 		if(err) { $close($id('DESU_alertWait')); $alert(err); }
@@ -2953,6 +2968,7 @@ function loadThread(post, last) {
 				click: function(e) { $pD(e); loadThread(post, 5); }
 			}));
 		}
+		if(fn) fn();
 	});
 }
 
@@ -3045,7 +3061,7 @@ function infoNewPosts(err, del) {
 	doc.title = (inf > 0 ? ' [' + inf + '] ' : '') + docTitle;
 }
 
-function loadNewPosts(inf) {
+function loadNewPosts(inf, fn) {
 	if(inf) $alert(Lng.loading, 'Wait');
 	ajaxGetPosts(null, brd, TNum, function(err) {
 		var i, len, del = getDelPosts(err);
@@ -3057,6 +3073,7 @@ function loadNewPosts(inf) {
 			$1($id('DESU_panelInfo')).textContent = len + '/' + getImages(dForm).snapshotLength;
 		}
 		if(inf) { $close($id('DESU_alertWait')); infoNewPosts(err, del); }
+		if(fn) fn();
 	}, true);
 }
 
@@ -3117,6 +3134,7 @@ function togglePost(post, vis) {
 	$each($X('following-sibling::*',
 		aib.krau ? $class('postheader', post)
 		: aib.tiny ? $class('intro', post)
+		: aib._420 ? $class('replyheader', post)
 		: $class('DESU_postPanel', post)
 	), function(el) { el.style.display = vis === 0 ? 'none' : ''; });
 }
@@ -3672,6 +3690,7 @@ function aibDetector(host, dc) {
 	this.vomb = h === 'vombatov.net';
 	this.ment = h === '02ch.org' || h === '02ch.net';
 	this.futr = h === '2chan.su';
+	this._420 = h === '420chan.org';
 	this.xDForm = './/form[' + (
 		this.hana || this.krau ? 'contains(@action,"delete")]'
 		: this.tiny ? '@name="postcontrols"]'
@@ -3770,12 +3789,12 @@ function initBoard() {
 		isGlobal: gs || ss
 	};
 	url = (window.location.pathname || '').match(
-		/^\/?(?:(.*?)\/*)?(res\/|thread-)?(\d+|index|wakaba)?(\.[xme]*html?)?$/);
+		/^\/?(?:(.*?)\/*)?(res\/|thread-)?(\d+|index|wakaba)?(\.(?:[xme]*html?|php))?$/);
 	brd = url[1] || (aib.dfwk ? 'df' : '');
 	res = aib.krau ? 'thread-' : 'res/';
 	TNum = url[2] ? url[3] : false;
 	pageNum = url[3] && !TNum ? +url[3] || 0 : 0;
-	docExt = url[4] || (aib.gazo ? '.htm' : '.html');
+	docExt = url[4] || (aib.gazo ? '.htm' : aib._420 ? '.php' : '.html');
 	favIcon = $x('.//head//link[@rel="shortcut icon"]');
 	if(favIcon) favIcon = favIcon.href;
 	cssFix = nav.Firefox ? '-moz-' : nav.Chrome ? '-webkit-' : '';
@@ -3817,11 +3836,13 @@ function forEachThread(node, dc, fn) {
 		if(nav.Opera && nav.Opera < 10) {
 			threads = $X('.//div[' + (
 				el ? 'starts-with(@id,"t") and not(contains(@id,"_info"))'
+				: aib._420 ? 'contains(@id,"420thread")'
 				: 'starts-with(@id,"thread")' + (aib._7ch ? 'and not(@id="thread_controls")' : '')
 			) + ']', node, dc);
 			if(threads.snapshotLength > 0) { $each(threads, fn, true); return; }
 			else threads.length = 0;
 		} else threads = node.querySelectorAll(el ? 'div[id^="t"]:not([id$="_info"])' 
+			: aib._420 ? 'div[id^="420thread"]'
 			: 'div[id^="thread"]' + (aib._7ch ? ':not(#thread_controls)' : ''));
 		if(threads.length === 0) {
 			el = node.firstChild;
@@ -3850,7 +3871,7 @@ function parseDelform(node, dc, tFn, pFn) {
 	for(i = node.getElementsByTagName('script'), len = i.length; len--;) $del(i[len]);
 	forEachThread(node, dc, function(thr) {
 		tNum = (thr.id || ($x((aib.krau ? 'div/' : '') + 'input[@type="checkbox"]', thr, dc) ||
-			$x('a[@name]' + (aib.kus ? '[2]' : ''), thr, dc)).name).match(/\d+/)[0];
+			$x('a[@name]' + (aib.kus ? '[2]' : ''), thr, dc)).name).match(/\d+$/)[0];
 		if(aib.tiny) $after(thr, [thr.lastElementChild]);
 		thr.className += ' DESU_thread';
 		thr.Num = tNum;
