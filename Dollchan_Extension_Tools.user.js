@@ -2199,7 +2199,9 @@ function scriptCSS() {
 		.file_reply + .DESU_ytObj { float: left; margin: 5px 20px 5px 5px; }\
 		.DESU_ytObj + div:not(.file_reply) { clear: both; }'
 	);
-	if(aib._420) x.push('.opqrbtn, .qrbtn, .ignorebtn { display: none; }');
+	if(aib._420) x.push('.opqrbtn, .qrbtn, .ignorebtn { display: none; }\
+		div[id^="DESU_hidThr_"] { margin-top: 1.2em; }'
+	);
 
 	if(!$id('DESU_css')) {
 		$t('head').appendChild($new('style', {id: 'DESU_css', type: 'text/css', text: x.join(' ')}));
@@ -3872,7 +3874,7 @@ function parseDelform(node, dc, tFn, pFn) {
 	forEachThread(node, dc, function(thr) {
 		tNum = (thr.id || ($x((aib.krau ? 'div/' : '') + 'input[@type="checkbox"]', thr, dc) ||
 			$x('a[@name]' + (aib.kus ? '[2]' : ''), thr, dc)).name).match(/\d+$/)[0];
-		if(aib.tiny) $after(thr, [thr.lastElementChild]);
+		if(aib.tiny || aib._420) $after(thr, [thr.lastElementChild]);
 		thr.className += ' DESU_thread';
 		thr.Num = tNum;
 		if(tFn) tFn(thr);
