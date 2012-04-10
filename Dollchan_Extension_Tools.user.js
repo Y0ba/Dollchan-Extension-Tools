@@ -1897,7 +1897,10 @@ function insertRefLink(e) {
 	e.stopPropagation(); $pD(e);
 	if(!TNum && Cfg.tform !== 0 && !pr.isQuick) pArea.style.display = '';
 	if(TNum && Cfg.pform === 2 && !pr.isQuick) showQuickReply(pByNum[pNum]);
-	else insertInto(pr.txta, '>>' + pNum);
+	else{
+		if(aib._420 && pr.txta.value === 'Comment') pr.txta.value = '';
+		insertInto(pr.txta, '>>' + pNum);
+	}
 }
 
 /*----------------------------Text formatting buttons------------------------*/
@@ -1945,7 +1948,7 @@ function tfBtn(id, title, wktag, bbtag, val) {
 function addTextPanel() {
 	$del($id('DESU_txtPanel'));
 	if(Cfg.txtbtn === 0 || !pr.txta) return;
-	$after(pr.subm, [$New('span', [
+	$after(aib._420 ? $class('popup', pr.form) : pr.subm, [$New('span', [
 		$txt(unescape('%u00A0')),
 		$if(Cfg.txtbtn === 2, $txt('[ ')),
 		tfBtn('DESU_btnBold', Lng.bold, '**', 'b', 'B'),
