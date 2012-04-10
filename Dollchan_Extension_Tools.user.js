@@ -1918,7 +1918,7 @@ function tfBtn(id, title, wktag, bbtag, val) {
 			text = x.value.substring(start, end).split('\n'),
 			i = text.length;
 		$pD(e);
-		if(aib.kus || aib.abu || aib.krau || aib.fch && wktag === '%%') {
+		if(aib.kus || aib.abu || aib.krau || aib._420 || aib.fch && wktag === '%%') {
 			tag1 = '[' + bbtag + ']';
 			tag2 = '[/' + bbtag + ']';
 		} else tag1 = tag2 = wktag;
@@ -1952,12 +1952,12 @@ function addTextPanel() {
 	$after(aib._420 ? $class('popup', pr.form) : pr.subm, [$New('span', [
 		$txt(unescape('%u00A0')),
 		$if(Cfg.txtbtn === 2, $txt('[ ')),
-		tfBtn('DESU_btnBold', Lng.bold, '**', 'b', 'B'),
-		tfBtn('DESU_btnItalic', Lng.italic, '*', 'i', 'i'),
-		tfBtn('DESU_btnUnder', Lng.underlined, '__', 'u', 'U'),
-		tfBtn('DESU_btnStrike', Lng.strike, aib._410 ? '^^' : '', 's', 'S'),
-		tfBtn('DESU_btnSpoiler', Lng.spoiler, '%%', 'spoiler', '%'),
-		tfBtn('DESU_btnCode', Lng.code, '`', aib.krau ? 'aa' : 'code', 'C'),
+		tfBtn('DESU_btnBold', Lng.bold, '**', aib._420 ? '**' : 'b', 'B'),
+		tfBtn('DESU_btnItalic', Lng.italic, '*', aib._420 ? '*' : 'i', 'i'),
+		$if(!aib._420, tfBtn('DESU_btnUnder', Lng.underlined, '__', 'u', 'U')),
+		$if(!aib._420, tfBtn('DESU_btnStrike', Lng.strike, aib._410 ? '^^' : '', 's', 'S')),
+		tfBtn('DESU_btnSpoiler', Lng.spoiler, '%%', aib._420 ? '%' : 'spoiler', '%'),
+		tfBtn('DESU_btnCode', Lng.code, '`', aib.krau ? 'aa' : aib._420 ? 'pre' : 'code', 'C'),
 		tfBtn('DESU_btnQuote', Lng.quote, '', '', '&gt;'),
 		$if(Cfg.txtbtn === 2, $txt(' ]'))
 	], {id: 'DESU_txtPanel'})]);
@@ -2172,7 +2172,9 @@ function scriptCSS() {
 		.DESU_viewed, .DESU_viewed .reply { color: #888 !important; }\
 		.reply { width: auto; }\
 		a[href="#"] { text-decoration: none !important; outline: none; }\
-		.DESU_pPost { font-weight: bold; }'
+		.DESU_pPost { font-weight: bold; }\
+		.DESU_info { padding: 3px 6px !important; }\
+		.DESU_pView { position: absolute; width: auto; min-width: 0; z-index: 9999; opacity: 0; border: 1px solid grey; }'
 	);
 	if(Cfg.delhd === 2) x.push('div[id^=DESU_hidThr_], div[id^=DESU_hidThr_] + div + br, div[id^=DESU_hidThr_] + div + br + hr { display: none; }');
 	if(Cfg.noname !== 0) x.push('.commentpostername, .postername, .postertrip { display: none; }');
@@ -2661,8 +2663,6 @@ function addRefMap(post, uEv) {
 function addNode(parent, pView, e) {
 	var el = pView.node = {parent: null, kid: null, lastkid: null, post: pView};
 	parent = parent.node;
-	pView.style.cssText =
-		'position: absolute; width: auto; min-width: 0; z-index: 9999; border: 1px solid grey; opacity: 0;';
 	dForm.appendChild(pView);
 	setPreviewPostion(e, pView);
 	$event(pView, {mouseover: function() { markPost(this.node, false); }, mouseout: markDelete});
@@ -2764,10 +2764,10 @@ function markRefMap(pView, pNum) {
 }
 
 function funcPostPreview(post, parent, e, txt) {
-	if(!post) return addNode(parent, $new('div', {Class: aib.pClass + ' DESU_info', html: txt}), e);
+	if(!post) return addNode(parent, $new('div', {Class: aib.pClass + ' DESU_info DESU_pView', html: txt}), e);
 	var el, pNum = post.Num, pView = post.cloneNode(true);
 	if(post.Vis === 0) togglePost(pView);
-	pView.className += ' DESU_post ' + aib.pClass;
+	pView.className += ' DESU_post DESU_pView ' + aib.pClass;
 	if(aib._7ch) {
 		pView.firstElementChild.style.cssText = 'max-width: 100%; margin: 0;';
 		$del($class('doubledash', pView));
