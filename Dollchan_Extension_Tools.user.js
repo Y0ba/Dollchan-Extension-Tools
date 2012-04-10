@@ -2205,7 +2205,7 @@ function scriptCSS() {
 		.file_reply + .DESU_ytObj { float: left; margin: 5px 20px 5px 5px; }\
 		.DESU_ytObj + div:not(.file_reply) { clear: both; }'
 	);
-	if(aib._420) x.push('.opqrbtn, .qrbtn, .ignorebtn { display: none; }\
+	if(aib._420) x.push('.opqrbtn, .qrbtn, .ignorebtn, .hidethread { display: none; }\
 		div[id^="DESU_hidThr_"] { margin-top: 1.2em; }'
 	);
 
