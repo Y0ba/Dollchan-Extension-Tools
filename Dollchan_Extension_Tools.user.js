@@ -3836,13 +3836,13 @@ function forEachThread(node, dc, fn) {
 		if(nav.Opera && nav.Opera < 10) {
 			threads = $X('.//div[' + (
 				el ? 'starts-with(@id,"t") and not(contains(@id,"_info"))'
-				: aib._420 ? 'contains(@id,"420thread")'
+				: aib._420 ? 'contains(@id,"thread")'
 				: 'starts-with(@id,"thread")' + (aib._7ch ? 'and not(@id="thread_controls")' : '')
 			) + ']', node, dc);
 			if(threads.snapshotLength > 0) { $each(threads, fn, true); return; }
 			else threads.length = 0;
 		} else threads = node.querySelectorAll(el ? 'div[id^="t"]:not([id$="_info"])' 
-			: aib._420 ? 'div[id^="420thread"]'
+			: aib._420 ? 'div[id*="thread"]'
 			: 'div[id^="thread"]' + (aib._7ch ? ':not(#thread_controls)' : ''));
 		if(threads.length === 0) {
 			el = node.firstChild;
