@@ -1866,6 +1866,7 @@ function showQuickReply(post) {
 	pr.form.style.width = '100%';
 	if(pr.cap && !pr.recap && !aib.kus) refreshCapImg(tNum);
 	if(!TNum) toggleQuickReply(tNum);
+	if(aib._420 && pr.txta.value === 'Comment') pr.txta.value = '';
 	insertInto(pr.txta, '>>' + post.Num + quotetxt.replace(/(^|\n)(.)/gm, '\n>$2') + '\n');
 }
 
