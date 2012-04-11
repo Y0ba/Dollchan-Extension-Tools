@@ -3873,7 +3873,7 @@ function parseDelform(node, dc, tFn, pFn) {
 			: aib.tire ? 'table[not(@class="postfiles")]'
 			: aib.kus ? 'table|div/table'
 			: 'table';
-	for(i = node.getElementsByTagName('script'), len = i.length; len--;) $del(i[len]);
+	if(!aib.abu) for(i = node.getElementsByTagName('script'), len = i.length; len--;) $del(i[len]);
 	forEachThread(node, dc, function(thr) {
 		tNum = (thr.id || ($x((aib.krau ? 'div/' : '') + 'input[@type="checkbox"]', thr, dc) ||
 			$x('a[@name]' + (aib.kus ? '[2]' : ''), thr, dc)).name).match(/\d+$/)[0];
