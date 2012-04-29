@@ -12,7 +12,7 @@
 
 (function (scriptStorage) {
 'use strict';
-var defaultCfg = {
+var defaultCfg = { 
 	'version':	'2012.04.29.2',
 	'lang':		0,		// script language [0=ru, 1=en]
 	'sstyle':	0,		// script elements style [0=gradient blue, 1=solid grey]
