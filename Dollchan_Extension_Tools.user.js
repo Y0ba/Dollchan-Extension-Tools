@@ -2754,20 +2754,6 @@ function ajaxSubmit(form, fn) {
 	fd.send(form.action, fn);
 }
 
-function toBlob(arr) {
-	if(nav.Firefox < 13) {
-		var bb = nav.Firefox ? new MozBlobBuilder() : new WebKitBlobBuilder(),
-			i = 0,
-			len = arr.length;
-		while(i < len) {
-			bb.append(arr[i++]);
-		}
-		return bb.getBlob();
-	} else {
-		return new Blob(arr);
-	}
-}
-
 function processImage(arr, force) {
 	var i = 0,
 		j = 0,
@@ -2868,7 +2854,7 @@ dataForm.prototype.readFile = function(el, idx) {
 			if(Cfg['postSameImg']) {
 				dat.push(String(Math.round(Math.random() * 1e6)));
 			}
-			dF.data[idx] = toBlob(dat);
+			dF.data[idx] = nav.toBlob(dat);
 			dF.busy--;
 		}
 		fr = dF = el = idx = file = null;
@@ -2893,7 +2879,7 @@ dataForm.prototype.send = function(url, fn) {
 	GM_xmlhttpRequest({
 		'method': 'POST',
 		'headers': headers,
-		'data': toBlob(this.data),
+		'data': nav.toBlob(this.data),
 		'url': url,
 		'onreadystatechange': function(xhr) {
 			if(xhr.readyState !== 4) {
@@ -3882,7 +3868,7 @@ function preloadImages(el) {
 			req.responseType = 'arraybuffer';
 			req.onload = function(e) {
 				if(this.status == 200) {
-					a_.href = window.URL.createObjectURL(toBlob([this.response]));
+					a_.href = window.URL.createObjectURL(nav.toBlob([this.response]));
 					if(eImg) {
 						$t('img', a_).src = a_.href;
 					}
@@ -6036,7 +6022,6 @@ function getNavigator() {
 			}, false);
 		}
 	}
-	nav.h5Rep = (nav.Firefox > 6 || nav.WebKit) && !aib.nul && !aib.tiny;
 	if(nav.WebKit) {
 		window.URL = window.webkitURL;
 	}
@@ -6066,6 +6051,30 @@ function getNavigator() {
 			Object.keys(obj).forEach(fn, obj);
 		}
 	nav.postMsg = nav.WebKit ? addContentScript : eval;
+	nav.h5Rep = !aib.nul && !aib.tiny;
+	try {
+		ua = new Blob(['1']);
+	} catch(e) {}
+	if(ua && ua.size > 0) {
+		window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+		if(window.BlobBuilder) {
+			nav.toBlob = function(arr) {
+				var bb = new BlobBuilder(),
+					i = 0,
+					len = arr.length;
+				while(i < len) {
+					bb.append(arr[i++]);
+				}
+				return bb.getBlob();
+			};
+		} else {
+			nav.h5Rep = false;
+		}
+	} else {
+		nav.toBlob = function(arr) {
+			return new Blob(arr);
+		};
+	}
 }
 
 function getPage() {
