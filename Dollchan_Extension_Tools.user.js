@@ -580,7 +580,9 @@ function $toRegExp(str) {
 
 function $isEmpty(obj) {
 	for(var i in obj) {
-		return false;
+		if(obj.hasOwnProperty(i)) {
+			return false;
+		}
 	}
 	return true;
 }
