@@ -956,9 +956,8 @@ function readPostsVisib() {
 	}
 	readHiddenThreads();
 	Posts.forEach(function(post) {
-		var pNum = post.Num,
-			key = nav.isCookie ? pByNum[pNum].Count : brd + pNum;
-		post.Vis = key in Visib ? Visib[key] : null;
+		var pNum = post.Num;
+		post.Vis = Visib[nav.isCookie ? pByNum[pNum].Count : brd + pNum];
 		if(post.isOp) {
 			if(hThrds[brd] && (
 				nav.isCookie && hThrds[brd].indexOf(pNum) >= 0
@@ -4545,6 +4544,7 @@ function newPost(thr, post, pNum, i) {
 			post.Text.substring(0, 70).replace(/\s+/g, ' ');
 		Threads.push(post);
 	}
+	post.Vis = Visib[nav.isCookie ? pByNum[pNum].Count : brd + pNum];
 	addPostButtons(post);
 	if(Cfg['expandPosts'] && !TNum) {
 		expandPost(post);
